@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oci-java-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: oci-java-app
+  template:
+    metadata:
+      labels:
+        app: oci-java-app
+    spec:
+      containers:
+      - name: oci-java-app
+        image: <OCIR_REPO>/java-svc:latest
+        ports:
+        - containerPort: 8080

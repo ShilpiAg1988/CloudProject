@@ -1,0 +1,9 @@
+version: 0.1
+component: deploy
+shell: bash
+steps:
+  - type: Command
+    name: Deploy to OKE
+    command: |
+      kubectl apply -f k8s/deployment.yaml
+      kubectl apply -f k8s/service.yaml
