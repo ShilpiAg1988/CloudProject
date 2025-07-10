@@ -7,10 +7,10 @@ steps:
     command: mvn clean package -DskipTests
   - type: Command
     name: Docker Build
-    command: docker build -t ${OCIR_REPO}/java-svc:latest .
+    command: docker build -t ${TOCIR_REPO}/java-svc:latest .
   - type: Command
     name: Docker Push
     command: |
       echo "Logging in to OCIR..."
-      docker login ${OCIR_REPO} -u '${OCI_USERNAME}' -p '${OCI_AUTH_TOKEN}'
-      docker push ${OCIR_REPO}/java-svc:latest
+      docker login ${TOCIR_REPO} -u '${TOCI_USERNAME}' -p '${TOCI_AUTH_TOKEN}'
+      docker push ${TOCIR_REPO}/java-svc:latest
