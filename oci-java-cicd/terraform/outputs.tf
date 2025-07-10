@@ -11,4 +11,7 @@ output "vcn_id" {
 output "subnet_id" {
   value = oci_core_subnet.oke-node-subnet.id
 }
+output "devops_project_id" {
+  value = oci_devops_project.my_devops_project.id
+}
 

@@ -118,6 +118,19 @@ resource "oci_artifacts_container_repository" "java_repo" {
   is_public      = false
 }
 
+resource "oci_ons_notification_topic" "devops_topic" {
+  compartment_id = var.compartment_ocid
+  name           = "devops-topic"
+  description    = "Notification topic for DevOps project"
+}
+resource "oci_devops_project" "my_devops_project" {
+  compartment_id = var.compartment_ocid
+  name           = "java-ci-cd-project"
+  description    = "DevOps project for Java CI/CD pipeline"
+  notification_config {
+    topic_id = oci_ons_notification_topic.devops_topic.id  # Optional: set to a Notifications topic OCID
+  }
+}
 output "cluster_id" {
   value = oci_containerengine_cluster.oke_cluster.id
 }
