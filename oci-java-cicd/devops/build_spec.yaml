@@ -3,6 +3,12 @@ component: build
 shell: bash
 steps:
   - type: Command
+    name: "Verbose Logging"
+    command: |
+      set -x  # enables bash debug logging
+      echo "Build started"
+      docker build --progress=plain -t myapp:latest .
+  - type: Command
     name: Maven Build
     command: mvn clean package -DskipTests
   - type: Command
