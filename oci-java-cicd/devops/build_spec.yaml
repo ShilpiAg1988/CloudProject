@@ -5,35 +5,35 @@ steps:
   - type: Command
     name: Maven Build
     command: mvn clean package -DskipTests
-#   - type: Command
-#     name: Install Pandoc
-#     command: |
-#       apt-get update
-#       apt-get install -y pandoc texlive texlive-xetex
-#   - type: Command
-#     name: Convert Markdown to PDF
-#     command: |
-#       pandoc README.md -o output/README.pdf
-#   - type: Command
-#     name: Upload PDF to Object Storage
-#     command: |
-#       # Define variables
-#       #NAMESPACE="<your-namespace-name>"
-#       BUCKET_NAME="alarmbot-bucket"
-#       FILE_NAME="README.pdf"
-#       FILE_PATH="output/README.pdf"
+  - type: Command
+    name: Install Pandoc
+    command: |
+      yum install -y epel-release
+      yum install -y pandoc texlive texlive-xetex
+  - type: Command
+    name: Convert Markdown to PDF
+    command: |
+      pandoc README.md -o output/README.pdf
+  - type: Command
+    name: Upload PDF to Object Storage
+    command: |
+      # Define variables
+      #NAMESPACE="<your-namespace-name>"
+      BUCKET_NAME="alarmbot-bucket"
+      FILE_NAME="README.pdf"
+      FILE_PATH="output/README.pdf"
 
-#       # Upload using OCI CLI
-#       oci os object put --bucket-name $BUCKET_NAME \
-#                         --name $FILE_NAME \
-#                         --file $FILE_PATH \
-#                         --force
-#   - type: Command
-#     name: List Output Files
-#     command: |
-#       ls -l output
-# outputArtifacts:
-#   - name: markdown-pdf
-#     type: BINARY
-#     location: output/README.pdf
+      # Upload using OCI CLI
+      oci os object put --bucket-name $BUCKET_NAME \
+                        --name $FILE_NAME \
+                        --file $FILE_PATH \
+                        --force
+  - type: Command
+    name: List Output Files
+    command: |
+      ls -l output
+outputArtifacts:
+  - name: markdown-pdf
+    type: BINARY
+    location: output/README.pdf
   
