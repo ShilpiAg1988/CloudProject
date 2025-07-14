@@ -32,7 +32,7 @@ steps:
     name: List Output Files
     command: |
       ls -l output
-    outputArtifacts:
+outputArtifacts:
   - name: markdown-pdf
     type: BINARY
     location: output/README.pdf
