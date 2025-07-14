@@ -1,41 +1,30 @@
 version: 0.1
 component: build
-timeoutInSeconds: 3600
+timeoutInSeconds: 1800
 shell: bash
+runAsUser: root
+
+env:
+  variables:
+    REGION: "iad"  # Replace with your region
+    TENANCY_NS: "idxib5yhfi1u"
+    REPO_NAME: "pandoc-images"
+    IMAGE_TAG: "pandoc-latex"
+    DOCKER_IMAGE: "iad.ocir.io/${TENANCY_NS}/${REPO_NAME}:${IMAGE_TAG}"
+
 steps:
   - type: Command
-    name: Maven Build
-    command: mvn clean package -DskipTests
-  - type: Command
-    name: Install Pandoc
+    name: Build Docker Image
     command: |
-      yum install -y wget
-      wget https://github.com/jgm/pandoc/releases/download/3.1.1/pandoc-3.1.1-1.x86_64.rpm
-      yum install -y ./pandoc-3.1.1-1.x86_64.rpm
-  - type: Command
-    name: Convert Markdown to PDF
-    command: |
-      pandoc README.md -o output/README.pdf
-  - type: Command
-    name: Upload PDF to Object Storage
-    command: |
-      # Define variables
-      #NAMESPACE="<your-namespace-name>"
-      BUCKET_NAME="alarmbot-bucket"
-      FILE_NAME="README.pdf"
-      FILE_PATH="output/README.pdf"
+      docker build -t ${DOCKER_IMAGE} .
 
-      # Upload using OCI CLI
-      oci os object put --bucket-name $BUCKET_NAME \
-                        --name $FILE_NAME \
-                        --file $FILE_PATH \
-                        --force
   - type: Command
-    name: List Output Files
+    name: Login to OCIR
     command: |
-      ls -l output
-outputArtifacts:
-  - name: markdown-pdf
-    type: BINARY
-    location: output/README.pdf
-  
+      echo "ViEt]3XNm{7W+VqE4G(P" | docker login iad.ocir.io \
+        -u "hcsops/shilpi.agrawal@oracle.com" --password-stdin
+
+  - type: Command
+    name: Push Image to OCIR
+    command: |
+      docker push ${DOCKER_IMAGE}
