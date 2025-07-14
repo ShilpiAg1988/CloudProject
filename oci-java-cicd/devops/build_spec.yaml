@@ -9,8 +9,9 @@ steps:
   - type: Command
     name: Install Pandoc
     command: |
-      yum install -y epel-release
-      yum install -y pandoc texlive texlive-xetex
+      yum install -y wget
+      wget https://github.com/jgm/pandoc/releases/download/3.1.1/pandoc-3.1.1-1.x86_64.rpm
+      yum install -y ./pandoc-3.1.1-1.x86_64.rpm
   - type: Command
     name: Convert Markdown to PDF
     command: |
