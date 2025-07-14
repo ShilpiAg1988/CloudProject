@@ -8,8 +8,8 @@ steps:
   - type: Command
     name: Install Pandoc
     command: |
-      sudo apt-get update
-      sudo apt-get install -y pandoc texlive texlive-xetex
+      apt-get update
+      apt-get install -y pandoc texlive texlive-xetex
   - type: Command
     name: Convert Markdown to PDF
     command: |
