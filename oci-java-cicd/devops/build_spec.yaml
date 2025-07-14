@@ -6,11 +6,34 @@ steps:
     name: Maven Build
     command: mvn clean package -DskipTests
   - type: Command
-    name: Docker Build
-    command: docker build -t ${TOCIR_REPO}/java-svc:latest .
-  - type: Command
-    name: Docker Push
+    name: Install Pandoc
     command: |
-      echo "Logging in to OCIR..."
-      docker login ${TOCIR_REPO} -u '${TOCI_USERNAME}' -p '${TOCI_AUTH_TOKEN}'
-      docker push ${TOCIR_REPO}/java-svc:latest
+      sudo apt-get update
+      sudo apt-get install -y pandoc texlive texlive-xetex
+  - type: Command
+    name: Convert Markdown to PDF
+    command: |
+      pandoc README.md -o output/README.pdf
+  - type: Command
+    name: Upload PDF to Object Storage
+    command: |
+      # Define variables
+      #NAMESPACE="<your-namespace-name>"
+      BUCKET_NAME="alarmbot-bucket"
+      FILE_NAME="README.pdf"
+      FILE_PATH="output/README.pdf"
+
+      # Upload using OCI CLI
+      oci os object put --bucket-name $BUCKET_NAME \
+                        --name $FILE_NAME \
+                        --file $FILE_PATH \
+                        --force
+  - type: Command
+    name: List Output Files
+    command: |
+      ls -l output
+    outputArtifacts:
+  - name: markdown-pdf
+    type: BINARY
+    location: output/README.pdf
+  
