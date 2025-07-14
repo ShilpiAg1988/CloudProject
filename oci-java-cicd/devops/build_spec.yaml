@@ -13,17 +13,29 @@ env:
 
 steps:
   - type: Command
-    name: Build Docker Image
+    name: Install md-to-pdf
     command: |
-      docker build -t ${DOCKER_IMAGE} .
-
+      curl -sL https://rpm.nodesource.com/setup_18.x | bash -
+      yum install -y nodejs
+      npm install -g md-to-pdf
   - type: Command
-    name: Login to OCIR
+    name: Convert Markdown to PDF
     command: |
-      echo "ViEt]3XNm{7W+VqE4G(P" | docker login iad.ocir.io \
-        -u "hcsops/shilpi.agrawal@oracle.com" --password-stdin
+      mkdir -p output
+      md-to-pdf README.md --output output/README.pdf
 
-  - type: Command
-    name: Push Image to OCIR
-    command: |
-      docker push ${DOCKER_IMAGE}
+  # - type: Command
+  #   name: Build Docker Image
+  #   command: |
+  #     docker build -t ${DOCKER_IMAGE} .
+
+  # - type: Command
+  #   name: Login to OCIR
+  #   command: |
+  #     echo "ViEt]3XNm{7W+VqE4G(P" | docker login iad.ocir.io \
+  #       -u "hcsops/shilpi.agrawal@oracle.com" --password-stdin
+
+  # - type: Command
+  #   name: Push Image to OCIR
+  #   command: |
+  #     docker push ${DOCKER_IMAGE}
