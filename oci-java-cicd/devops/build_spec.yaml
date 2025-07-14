@@ -17,11 +17,12 @@ steps:
     command: |
       curl -sL https://rpm.nodesource.com/setup_18.x | bash -
       yum install -y nodejs
-      npm install -g md-to-pdf
+      npm install -g markdown-pdf
   - type: Command
     name: Convert Markdown to PDF
     command: |
-      md-to-pdf README.md output/README.pdf
+      mkdir -p output
+      md-to-pdf README.md --output output/README.pdf
 
   # - type: Command
   #   name: Build Docker Image
