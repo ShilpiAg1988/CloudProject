@@ -9,7 +9,7 @@ env:
     TENANCY_NS: "idxib5yhfi1u"
     REPO_NAME: "pandoc-images"
     IMAGE_TAG: "pandoc-latex"
-    DOCKER_IMAGE: "iad.ocir.io/${TENANCY_NS}/${REPO_NAME}:${IMAGE_TAG}"
+    DOCKER_IMAGE: "iad.ocir.io/idxib5yhfi1u/pandoc-images:pandoc-latex"
 
 steps:
   - type: Command
