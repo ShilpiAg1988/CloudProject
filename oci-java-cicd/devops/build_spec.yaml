@@ -23,6 +23,20 @@ steps:
     command: |
       mkdir -p output
       markdown-pdf README.md -o output/README.pdf 
+  - type: Command
+    name: Upload PDF to Object Storage
+    command: |
+      # Define variables
+      #NAMESPACE="<your-namespace-name>"
+      BUCKET_NAME="alarmbot-bucket"
+      FILE_NAME="README.pdf"
+      FILE_PATH="output/README.pdf"
+
+      # Upload using OCI CLI
+      oci os object put --bucket-name $BUCKET_NAME \
+                        --name $FILE_NAME \
+                        --file $FILE_PATH \
+                        --force
 
   # - type: Command
   #   name: Build Docker Image
