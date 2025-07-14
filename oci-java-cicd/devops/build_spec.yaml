@@ -22,7 +22,7 @@ steps:
     name: Convert Markdown to PDF
     command: |
       mkdir -p output
-      md-to-pdf README.md --output output/README.pdf
+      markdown-pdf README.md -o output/README.pdf 
 
   # - type: Command
   #   name: Build Docker Image
