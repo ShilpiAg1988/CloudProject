@@ -21,7 +21,6 @@ steps:
   - type: Command
     name: Convert Markdown to PDF
     command: |
-      mkdir -p output
       md-to-pdf README.md --output output/README.pdf
 
   # - type: Command
