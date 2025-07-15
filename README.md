@@ -12,3 +12,4 @@ Apart from terraform -
 	GitHubVault Vaults
 	GitHubPAT Secrets (Personal Access Token from Github)
     Mirror OCI repo and Automatic trigger build.
+    Test message.

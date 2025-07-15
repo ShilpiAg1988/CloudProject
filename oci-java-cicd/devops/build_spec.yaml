@@ -58,7 +58,7 @@ steps:
             if [ -f "$mdfile" ]; then
               filename=$(basename "$mdfile" .md)
               echo "Converting $mdfile to output/$filename.pdf"
-              markdown-pdf "$mdfile" "output/$filename.pdf"
+              markdown-pdf "$mdfile" -o "output/$filename.pdf"
             else
               echo "Skipped deleted or missing file: $mdfile"
             fi
