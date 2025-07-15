@@ -24,7 +24,7 @@ steps:
       mkdir -p output
       markdown-pdf README.md -o output/README.pdf 
   - type: Command
-    name: Upload PDF to Object Storage
+    name: Upload PDF to Object Storage Test
     command: |
       # Define variables
       #NAMESPACE="<your-namespace-name>"
