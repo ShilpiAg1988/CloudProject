@@ -12,31 +12,116 @@ env:
     DOCKER_IMAGE: "iad.ocir.io/idxib5yhfi1u/pandoc-images:pandoc-latex"
 
 steps:
+   
+  - type: Command
+    name: Detect Markdown Changes
+    command: |
+      echo "Checking for changed .md files..."
+      mkdir -p output
+
+      if git diff --name-only HEAD~1 HEAD | grep -q '\.md$'; then
+        echo "MD_CHANGED=true" > output/flags.env
+        echo "Markdown file(s) changed."
+      else
+        echo "MD_CHANGED=false" > output/flags.env
+        echo "No Markdown file changes detected."
+      fi
   - type: Command
     name: Install md-to-pdf
     command: |
-      curl -sL https://rpm.nodesource.com/setup_18.x | bash -
-      yum install -y nodejs
-      npm install -g markdown-pdf
+      source output/flags.env
+      if [ "$MD_CHANGED" = "true" ]; then
+        echo "Installing tool Markdown to PDF..."
+        curl -sL https://rpm.nodesource.com/setup_18.x | bash -
+        yum install -y nodejs
+        npm install -g markdown-pdf
+      else
+        echo "Skipping Markdown to PDF install."
+      fi
+      
   - type: Command
-    name: Convert Markdown to PDF
+    name: Detect and Convert Changed Markdown Files
     command: |
-      mkdir -p output
-      markdown-pdf README.md -o output/README.pdf 
-  - type: Command
-    name: Upload PDF to Object Storage Test
-    command: |
-      # Define variables
-      #NAMESPACE="<your-namespace-name>"
-      BUCKET_NAME="alarmbot-bucket"
-      FILE_NAME="README.pdf"
-      FILE_PATH="output/README.pdf"
+      source output/flags.env
+      if [ "$MD_CHANGED" = "true" ]; then
+        mkdir -p output
+        echo "Detecting changed Markdown files..."
 
-      # Upload using OCI CLI
-      oci os object put --bucket-name $BUCKET_NAME \
-                        --name $FILE_NAME \
-                        --file $FILE_PATH \
-                        --force
+        git diff --name-only HEAD~1 HEAD | grep '\.md$' > output/md_files.txt || true
+
+        if [ -s output/md_files.txt ]; then
+          echo "Markdown files changed:"
+          cat output/md_files.txt
+
+          while read mdfile; do
+            # Check that file still exists (not deleted in commit)
+            if [ -f "$mdfile" ]; then
+              filename=$(basename "$mdfile" .md)
+              echo "Converting $mdfile to output/$filename.pdf"
+              markdown-pdf "$mdfile" "output/$filename.pdf"
+            else
+              echo "Skipped deleted or missing file: $mdfile"
+            fi
+          done < output/md_files.txt
+
+         echo "MD_CHANGED=true" > output/flags.env
+        else
+          echo "No Markdown file changes detected."
+          echo "MD_CHANGED=false" > output/flags.env
+        fi
+      else
+        echo "No .md file changed. Skipping conversion."
+      fi
+
+  # - type: Command
+  #   name: Conditional Markdown to PDF
+  #   command: |
+  #     source output/flags.env
+  #     if [ "$MD_CHANGED" = "true" ]; then
+  #       echo "Converting Markdown to PDF..."
+  #       # Install or assume md-to-pdf is available
+  #       markdown-pdf README.md output/README.pdf
+  #     else
+  #       echo "Skipping Markdown to PDF step."
+  #     fi
+  - type: Command
+    name: Upload Converted PDFs
+    command: |
+      BUCKET_NAME="alarmbot-bucket"
+
+      echo "Uploading converted PDFs to bucket: $BUCKET_NAME"
+
+      for pdf_file in output/*.pdf; do
+        if [ -f "$pdf_file" ]; then
+          echo "Uploading $pdf_file..."
+          oci os object put \
+            --bucket-name "$BUCKET_NAME" \
+            --name "$(basename $pdf_file)" \
+            --file "$pdf_file" \
+            --force
+        else
+          echo "No PDF files found to upload."
+        fi
+      done
+  # - type: Command
+  #   name: Convert Markdown to PDF
+  #   command: |
+  #     mkdir -p output
+  #     markdown-pdf README.md -o output/README.pdf 
+  # - type: Command
+  #   name: Upload PDF to Object Storage Test
+  #   command: |
+  #     # Define variables
+  #     #NAMESPACE="<your-namespace-name>"
+  #     BUCKET_NAME="alarmbot-bucket"
+  #     FILE_NAME="README.pdf"
+  #     FILE_PATH="output/README.pdf"
+
+  #     # Upload using OCI CLI
+  #     oci os object put --bucket-name $BUCKET_NAME \
+  #                       --name $FILE_NAME \
+  #                       --file $FILE_PATH \
+  #                       --force
 
   # - type: Command
   #   name: Build Docker Image
